@@ -12,7 +12,7 @@
 ##' rtm_search("list:Shopping")
 ##' 
 ##' rtm_search("priority:1")
-rtm_search <- function(filter, all_info = FALSE) {
+rtm_search <- function(filter) {
   rsp <- rtm_req("rtm.tasks.getList", filter = filter)
   if (exists("tasks", rsp) &&
       exists("list", rsp[["tasks"]]) &&
@@ -22,7 +22,6 @@ rtm_search <- function(filter, all_info = FALSE) {
     stop("unable to find task info")
 
   names(df_list) <- get_rtm_list_name(rsp[["tasks"]][["list"]][["id"]])
-  ## if (!all_info)
-  ##   return(lapply(df_list, filter_task_info))
-  df_list
+  
+  lapply(df_list, filter_task_info)
 }
