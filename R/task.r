@@ -11,7 +11,7 @@ filter_task_info <- function(df) {
   mful_info <- intersect(c("name", "url", "location_id", "tags",
                            "participants", "notes", "rrule"),
                          names(df))
-  ## when the task series list is 1 entry long, it is not a data frame but
+  ## when the task series list is 1 entry long, it's not a data frame but
   ## a named list so we need to do some trickery to get it into a data frame
   ## just quickdf and as.data.frame won't do b/c of the potentially
   ## nested nature of its contents
@@ -31,11 +31,23 @@ filter_task_info <- function(df) {
     first_part <- df[, mful_info]
 
   tasks <- aggregate_task_column(df[["task"]])
+  tasks[,"due"] <- rtm_date(tasks[,"due"])
+  tasks[,"added"] <- rtm_date(tasks[,"added"])
+  tasks[,"completed"] <- rtm_date(tasks[,"completed"])
   
   first_part[["seriesid"]] <- seq_len(nrow(first_part))
   res <- merge(first_part, tasks)
   res
 }
+
+##' Convert date stored in RTM server format to R POSIXlt format.
+##'
+##' @param date date string in RTM server format
+##' @return a POSIXlt value
+rtm_date <- function(date) {
+  strptime(date, "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+}
+
 
 ##' Handle the task column properly depending on its form, either
 ##' a data frame or a list.
