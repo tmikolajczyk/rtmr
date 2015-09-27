@@ -1,0 +1,14 @@
+Package: rtmr
+Title: R client for the Remember the Milk API
+Version: 0.0.0.9000
+Authors@R: person("John", "Kowalski", email = "jowalski@gmail.com",
+    role = c("aut", "cre"))
+Description: This is an R interface for the 'Remember the Milk'
+    to-do list web app.
+Depends: R (>= 3.2.2)
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/jowalski/rtmr
+BugReports: https://github.com/jowalski/rtmr/issues
+Imports: httr, jsonlite, digest
+Suggests: testthat
