@@ -102,3 +102,19 @@ rtm_add_task <- function(name) {
     cat("Added task\n")
   invisible(rsp)
 }
+##' Complete a task.
+##'
+##' @param task a single row task from a data frame of tasks that is the
+##'     result from rtm_search
+##' @return response from the server
+##' @export
+rtm_complete <- function(task) {
+  rsp <- rtm_req("rtm.tasks.complete", timeline = rtm_timeline(),
+                 list_id = task[["list_id"]][1],
+                 taskseries_id = task[["id"]][1],
+                 task_id = task[["task.id"]][1])
+  if (rsp[["stat"]] == "ok")
+    cat("Task completed!\n")
+  invisible(rsp)
+  rsp
+}

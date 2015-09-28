@@ -7,10 +7,10 @@
 get_rtm_list_name(id)
 }
 \arguments{
-\item{id}{the id}
+\item{id}{the RTM list id}
 }
 \value{
-a list name
+the list name
 }
 \description{
 Get the RTM list name from an id.

@@ -2,7 +2,9 @@
 
 export(filter_task_info)
 export(get_auth)
+export(get_rtm_list_name)
 export(rtm_add_task)
+export(rtm_complete)
 export(rtm_pat)
 export(rtm_req)
 export(rtm_search)
