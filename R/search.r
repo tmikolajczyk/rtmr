@@ -14,14 +14,23 @@
 ##' rtm_search("priority:1 list:Work")
 rtm_search <- function(filter) {
   rsp <- rtm_req("rtm.tasks.getList", filter = filter)
-  if (exists("tasks", rsp) &&
-      exists("list", rsp[["tasks"]]) &&
-      exists("taskseries", rsp[["tasks"]][["list"]]))
+  if (exists("tasks", rsp) && !exists("list", rsp[["tasks"]])) {
+    cat("No tasks matching your query\n")
+    return(list())
+  } else if (exists("list", rsp[["tasks"]]) &&
+             exists("taskseries", rsp[["tasks"]][["list"]])) {
     df_list <- rsp[["tasks"]][["list"]][["taskseries"]]
-  else
+  } else {
     stop("unable to find task info")
+  }
 
-  names(df_list) <- get_rtm_list_name(rsp[["tasks"]][["list"]][["id"]])
+  list_ids <- rsp[["tasks"]][["list"]][["id"]]
+  list_names <- get_rtm_list_name(list_ids)
+  processed_dfs <- lapply(df_list, filter_task_info)
 
-  lapply(df_list, filter_task_info)
+  for (i in seq_along(processed_dfs)) {
+    processed_dfs[[i]][["list_id"]] <- list_ids[i]
+    processed_dfs[[i]][["list_name"]] <- list_names[i]
+  }
+  plyr::ldply(processed_dfs)
 }
