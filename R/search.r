@@ -3,7 +3,7 @@
 ##' See https://www.rememberthemilk.com/help/?ctx=basics.search.advanced
 ##' for specific parameters.
 ##' 
-##' @param filter 
+##' @param filter the search terms passed to RTM advanced search
 ##' @return a list of data frames contained in the response from rtm_req
 ##'     for an advanced search
 ##' @export
@@ -11,7 +11,7 @@
 ##'
 ##' rtm_search("list:Shopping")
 ##' 
-##' rtm_search("priority:1")
+##' rtm_search("priority:1 list:Work")
 rtm_search <- function(filter) {
   rsp <- rtm_req("rtm.tasks.getList", filter = filter)
   if (exists("tasks", rsp) &&

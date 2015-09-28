@@ -1,5 +1,7 @@
 ##' Cache the list of RTM lists so we only need it once per R session.
 ##'
+##' @param varname the name the variable is to be stored in in the global
+##'     environment
 ##' @param envir environment to store it in, should be the global
 rtm_cache_lists <- function(varname = ".rtm_lists_info",
                             envir = globalenv()) {
