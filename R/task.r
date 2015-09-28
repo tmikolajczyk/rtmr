@@ -146,11 +146,11 @@ apply_rtm_method <- function(method, task, msg = NULL) {
     base_call <- c(base_call, setNames(list(msg), msg_dict[method]))
   rsp <- do.call("rtm_req", base_call)
   if (rsp[["stat"]] == "ok")
-    cat(sprintf("Method \"%s completed successfully!\n", method))
+    cat(sprintf("Method \"%s\" completed successfully!\n", method))
   invisible(rsp)
 }
 
-##' Get the time from text from the RTM server.
+##' Convert the time from text to UTC via the RTM service.
 ##'
 ##' @param text a character string representing text
 ##' @return a time
