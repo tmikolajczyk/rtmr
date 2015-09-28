@@ -2,6 +2,7 @@
 
 export(filter_task_info)
 export(get_auth)
+export(rtm_add_task)
 export(rtm_pat)
 export(rtm_req)
 export(rtm_search)
