@@ -2,5 +2,6 @@
 ##'
 ##' @return a timeline id character string
 rtm_timeline <- function() {
-  rtm_req("rtm.timelines.create")
+  rsp <- rtm_req("rtm.timelines.create")
+  rsp[["timeline"]]
 }
