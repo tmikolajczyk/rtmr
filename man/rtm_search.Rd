@@ -7,7 +7,7 @@
 rtm_search(filter)
 }
 \arguments{
-\item{filter}{}
+\item{filter}{the search terms passed to RTM advanced search}
 }
 \value{
 a list of data frames contained in the response from rtm_req
@@ -20,6 +20,6 @@ for specific parameters.
 \examples{
 rtm_search("list:Shopping")
 
-rtm_search("priority:1")
+rtm_search("priority:1 list:Work")
 }
 

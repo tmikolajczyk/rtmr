@@ -7,6 +7,9 @@
 rtm_cache_lists(varname = ".rtm_lists_info", envir = globalenv())
 }
 \arguments{
+\item{varname}{the name the variable is to be stored in in the global
+environment}
+
 \item{envir}{environment to store it in, should be the global}
 }
 \description{
