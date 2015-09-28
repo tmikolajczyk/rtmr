@@ -40,10 +40,25 @@ rtm_date <- function(date) {
 
 ## this idea and code (quickdf) is attributed to Hadley Wickham
 ## http://adv-r.had.co.nz/Profiling.html
-## it's much faster than using as.data.frame, and we seem to be
-## guaranteed well-formed lists
+## it's much faster than using as.data.frame, and in our use case
+## we seem to be guaranteed well-formed lists
 quickdf <- function(l) {
   class(l) <- "data.frame"
   attr(l, "row.names") <- .set_row_names(length(l[[1]]))
   l
+}
+
+##' Add a task.
+##'
+##' @param name the name of the task including all Smart Add tags
+##' @param timeline a timeline
+##' @return response from the server
+##' @export
+rtm_add_task <- function(name) {
+  ## parse is 1 because we always use Smart Add, for now
+  rsp <- rtm_req("rtm.tasks.add", name = name,
+                 timeline = rtm_timeline(), parse = "1")
+  if (rsp[["stat"]] == "ok")
+    cat("Added task\n")
+  invisible(rsp)
 }
