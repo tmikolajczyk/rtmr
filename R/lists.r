@@ -1,4 +1,9 @@
 ##' Cache the list of RTM lists so we only need it once per R session.
+##' XXXjowalskiXXX just realized a problem here, of course lists can be
+##' added during a session, so we need to scrap this, also, might as well
+##' just move onto putting list info into data frames in filter_task_info
+##' anyway, since that seems to be where a lot of the sauce is getting made
+##' already
 ##'
 ##' @param varname the name the variable is to be stored in in the global
 ##'     environment
