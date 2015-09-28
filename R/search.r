@@ -22,6 +22,6 @@ rtm_search <- function(filter) {
     stop("unable to find task info")
 
   names(df_list) <- get_rtm_list_name(rsp[["tasks"]][["list"]][["id"]])
-  
+
   lapply(df_list, filter_task_info)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/task.r
 \name{filter_task_info}
 \alias{filter_task_info}
-\title{Return standard task info from rtm_search in a nicer way.}
+\title{Process task info from rtm_search.}
 \usage{
 filter_task_info(df)
 }
@@ -10,6 +10,6 @@ filter_task_info(df)
 \item{df}{a data frame of tasks returned by rtm_search}
 }
 \description{
-Return standard task info from rtm_search in a nicer way.
+Process task info from rtm_search.
 }
 

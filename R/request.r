@@ -37,7 +37,7 @@ rtm_req <- function(method, auth = TRUE, ...) {
   response_text <- httr::content(response, as = "text")
   check_json_response(response_text)
   
-  response_rtm <- jsonlite::fromJSON(response_text)
+  response_rtm <- jsonlite::fromJSON(response_text, flatten = TRUE)
   check_rtm_response(response_rtm)
   
   ret <- response_rtm[["rsp"]]

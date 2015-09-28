@@ -4,7 +4,7 @@
 \alias{rtm_search}
 \title{Search tasks using the RTM advanced search feature.}
 \usage{
-rtm_search(filter, all_info = FALSE)
+rtm_search(filter)
 }
 \arguments{
 \item{filter}{}
