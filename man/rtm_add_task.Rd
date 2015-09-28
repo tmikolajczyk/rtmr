@@ -8,8 +8,6 @@ rtm_add_task(name)
 }
 \arguments{
 \item{name}{the name of the task including all Smart Add tags}
-
-\item{timeline}{a timeline}
 }
 \value{
 response from the server

@@ -51,7 +51,6 @@ quickdf <- function(l) {
 ##' Add a task.
 ##'
 ##' @param name the name of the task including all Smart Add tags
-##' @param timeline a timeline
 ##' @return response from the server
 ##' @export
 rtm_add_task <- function(name) {
