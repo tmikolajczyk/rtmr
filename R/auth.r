@@ -21,7 +21,7 @@ get_auth <- function(perms = "delete") {
     ## point the user to the url
     message("Please authenticate in a browser.\n",
             "If the site does not appear automatically, ",
-            "copy the link below into a web browser.\n",
+            "copy the link below and enter it into a web browser.\n\n",
             auth_url, "\n");
     browseURL(auth_url);
     invisible(readline(prompt = "Press Enter when finished\n"));
@@ -43,12 +43,14 @@ get_auth <- function(perms = "delete") {
     }
     break
   }
-  message("Authentication complete.",
-          sprintf("Thank you %s.\n",
+  message("Authentication complete.\n\n",
+          sprintf("Thank you,  %s.\n",
                   token_rsp[["auth"]][["user"]][["fullname"]]),
           sprintf("Your personal authentication token (PAT) is:\n\n%s\n",
-                  token_rsp[["auth"]][["token"]]));
-  token_rsp$auth
+                  token_rsp[["auth"]][["token"]]),
+          "Please store this in your \'RTM_PAT\' environment variable, ",
+          "ideally in your .Renviron file in your home folder.");
+  token_rsp$auth$token
 }
 
 ##' Retrieves the personal authentication token
