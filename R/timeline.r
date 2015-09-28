@@ -4,7 +4,7 @@
 rtm_timeline <- function() {
   if (!exists(".rtm_timeline", globalenv()))
     rtm_cache_timeline()
-  get(".timeline", envir = globalenv())
+  get(".rtm_timeline", envir = globalenv())
 }
 
 ##' Request a new timeline and store it in the global environment.
