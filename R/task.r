@@ -102,6 +102,7 @@ rtm_add_task <- function(name) {
     cat("Added task\n")
   invisible(rsp)
 }
+
 ##' Complete a task.
 ##'
 ##' @param task a single row task from a data frame of tasks that is the
@@ -117,4 +118,46 @@ rtm_complete <- function(task) {
     cat("Task completed!\n")
   invisible(rsp)
   rsp
+}
+
+##' Apply a method to a task.
+##'
+##' @param method one of the RTM API "rtm.tasks.*" methods
+##' @param task a task
+##' @param msg the additional parameter that some methods optionally have
+##' @return response from the server
+##' @export
+apply_rtm_method <- function(method, task, msg = NULL) {
+  rtm_method <- paste0("rtm.tasks.", method)
+  
+  msg_dict <- c(add = "parse", addTags = "tags",
+                movePriority = "direction",
+                removeTags = "tags", setDueDate = "due",
+                setEstimate = "estimate", setLocation = "location_id",
+                setName = "name", setPriority = "priority",
+                setRecurrence = "repeat", setTags = "tags",
+                setURL = "url")
+  
+  base_call <- list(rtm_method, timeline = rtm_timeline(),
+                    list_id = task[["list_id"]][1],
+                    taskseries_id = task[["id"]][1],
+                    task_id = task[["task.id"]][1])
+  if (!is.null(msg))
+    base_call <- c(base_call, setNames(list(msg), msg_dict[method]))
+  rsp <- do.call("rtm_req", base_call)
+  if (rsp[["stat"]] == "ok")
+    cat(sprintf("Method \"%s completed successfully!\n", method))
+  invisible(rsp)
+}
+
+##' Get the time from text from the RTM server.
+##'
+##' @param text a character string representing text
+##' @return a time
+rtm_time <- function(text) {
+  rsp <- rtm_req("rtm.time.parse", FALSE, text = text)
+  if (exists("time", rsp) && exists("$t", rsp[["time"]]))
+    return(rsp[["time"]][["$t"]])
+  else
+    stop("problem getting time from RTM")
 }
