@@ -23,10 +23,38 @@ filter_task_info <- function(df) {
     df <- cbind(atomic_df, task)
   }
 
+  ## if tasks are repeating it may be the case that it has multiple
+  ## entries per row, we need to test if df[["task"]] is a list
+  if (exists("task", where = df) && !is.data.frame(df[["task"]])) {
+    df <- handle_multiple_tasks(df)
+  }
+
   ## convert times for all
   time_vars <- c("created", "modified", "task.due",
                  "task.added", "task.completed")
   df[, time_vars] <- plyr::colwise(rtm_date, time_vars)(df)
+  df
+}
+
+##' Handle the case where a task is repeating and has multiple entries
+##' per row.
+##'
+##' In this case df[["task"]] is a list and needs to be converted to a
+##' data frame and merged back into the larger data frame.
+##'
+##' @param df the list
+##' @return the data frame
+handle_multiple_tasks <- function(df) {
+  for (i in seq_along(df[["task"]])) {
+    df[["task"]][[i]][["series_id"]] <- i
+  }
+  tasks <- Reduce(rbinddf, df[["task"]])
+  ## rename tasks according to the convention
+  names(tasks) <- gsub("^", "task\\.", names(tasks))
+  df[["task"]] <- NULL
+  df[["task.series_id"]] <- seq_len(nrow(df))
+  df <- merge(df, tasks)
+  df[["task.series_id"]] <- NULL
   df
 }
 
@@ -38,14 +66,27 @@ rtm_date <- function(date) {
   strptime(date, "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 }
 
-## this idea and code (quickdf) is attributed to Hadley Wickham
-## http://adv-r.had.co.nz/Profiling.html
-## it's much faster than using as.data.frame, and in our use case
-## we seem to be guaranteed well-formed lists
+##' Convert a list to a data frame
+##'
+##'this idea and code (quickdf) is attributed to Hadley Wickham
+##' http://adv-r.had.co.nz/Profiling.html
+##' it's much faster than using as.data.frame, and in our use case
+##' we seem to be guaranteed well-formed lists
+##' @param a list suitable to be a data frame with quick conversion
+##' @return a data frame
 quickdf <- function(l) {
   class(l) <- "data.frame"
   attr(l, "row.names") <- .set_row_names(length(l[[1]]))
   l
+}
+
+##' Create a data frame out of two lists or data frames.
+##'
+##' @param x a list or data frame
+##' @param y a list or data frame
+##' @return a data frame
+rbinddf <- function(x, y) {
+  rbind(quickdf(x), quickdf(y))
 }
 
 ##' Add a task.
