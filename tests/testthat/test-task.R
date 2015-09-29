@@ -8,17 +8,17 @@ test_that(
 
 test_that(
   "complete a task", {
-    skip()
+    skip("need to write test")
   })
 
 test_that(
   "postpone a task", {
-    skip()
+    skip("need to write test")
   })
 
 test_that(
   "get a list of tasks", {
-    expect_is(rtm_search("list:zzz_rtmr_test_list")[[1]], "data.frame")
+    expect_is(rtm_search("list:zzz_rtmr_test_list"), "data.frame")
   })
 
 test_that(
@@ -34,6 +34,7 @@ test_that(
     note_title <- sprintf("test note title %s", r_int)
     note_text <- sprintf("this is a test note %s", r_int)
     
-    expect_output(rtm_add_note(task, note_title, note_text),
+    expect_output(apply_rtm_method("notes.add", task, note_title,
+                                   note_text = note_text),
                   "Method \"notes.add\" completed")
   })
