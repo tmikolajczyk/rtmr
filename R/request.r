@@ -23,10 +23,14 @@
 rtm_req <- function(method, auth = TRUE, ...) {
   url <- "https://api.rememberthemilk.com/"
   path <- "services/rest/"
+
+  dots <- list(...)
+  if (length(dots) != length(which(names(dots) != "")))
+    stop("There cannot be unnamed '...' arguments to rtm_req")
   
   ## construct query
   query <- c(list(method = method, api_key = api_key(),
-                  format = "json"), list(...))
+                  format = "json"), dots)
   if (auth)
     query <- c(query, list(auth_token = rtm_pat()))
   query <- c(query, list(api_sig = sign_request(query)))
