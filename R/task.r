@@ -98,8 +98,7 @@ rtm_add_task <- function(name) {
   ## parse is 1 because we always use Smart Add, for now
   rsp <- rtm_req("rtm.tasks.add", name = name,
                  timeline = rtm_timeline(), parse = "1")
-  if (rsp[["stat"]] == "ok")
-    cat("Added task\n")
+  cat("Added task\n")
   invisible(rsp)
 }
 
@@ -108,9 +107,10 @@ rtm_add_task <- function(name) {
 ##' @param method one of the RTM API "rtm.tasks.*" methods
 ##' @param task a task
 ##' @param msg the additional parameter that some methods optionally have
+##' @param ... additional arguments
 ##' @return response from the server
 ##' @export
-apply_rtm_method <- function(method, task, msg = NULL) {
+apply_rtm_method <- function(method, task, msg = NULL, ...) {
   rtm_method <- paste0("rtm.tasks.", method)
   
   msg_dict <- c(add = "parse", addTags = "tags",
@@ -119,17 +119,17 @@ apply_rtm_method <- function(method, task, msg = NULL) {
                 setEstimate = "estimate", setLocation = "location_id",
                 setName = "name", setPriority = "priority",
                 setRecurrence = "repeat", setTags = "tags",
-                setURL = "url")
+                setURL = "url", notes.add = "note_title")
   
-  base_call <- list(rtm_method, timeline = rtm_timeline(),
-                    list_id = task[["list_id"]][1],
-                    taskseries_id = task[["id"]][1],
-                    task_id = task[["task.id"]][1])
+  base_call <- c(list(rtm_method, timeline = rtm_timeline(),
+                      list_id = task[["list_id"]][1],
+                      taskseries_id = task[["id"]][1],
+                      task_id = task[["task.id"]][1]),
+                 list(...))
   if (!is.null(msg))
     base_call <- c(base_call, setNames(list(msg), msg_dict[method]))
   rsp <- do.call("rtm_req", base_call)
-  if (rsp[["stat"]] == "ok")
-    cat(sprintf("Method \"%s\" completed successfully!\n", method))
+  cat(sprintf("Method \"%s\" completed successfully!\n", method))
   invisible(rsp)
 }
 
@@ -161,7 +161,6 @@ rtm_move_task <- function(task, to_list_name) {
                  to_list_id = to_list_id,
                  taskseries_id = task[["id"]][1],
                  task_id = task[["task.id"]][1])
-  if (rsp[["stat"]] == "ok")
-    cat("Method \"moveTo\" completed successfully!\n")
+  cat("Method \"moveTo\" completed successfully!\n")
   invisible(rsp)
 }

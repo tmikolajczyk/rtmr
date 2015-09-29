@@ -4,7 +4,7 @@
 \alias{apply_rtm_method}
 \title{Apply a method to a task.}
 \usage{
-apply_rtm_method(method, task, msg = NULL)
+apply_rtm_method(method, task, msg = NULL, ...)
 }
 \arguments{
 \item{method}{one of the RTM API "rtm.tasks.*" methods}
@@ -12,6 +12,8 @@ apply_rtm_method(method, task, msg = NULL)
 \item{task}{a task}
 
 \item{msg}{the additional parameter that some methods optionally have}
+
+\item{...}{additional arguments}
 }
 \value{
 response from the server
