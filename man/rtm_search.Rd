@@ -4,10 +4,12 @@
 \alias{rtm_search}
 \title{Search tasks using the RTM advanced search feature.}
 \usage{
-rtm_search(filter)
+rtm_search(filter, completed = FALSE)
 }
 \arguments{
 \item{filter}{the search terms passed to RTM advanced search}
+
+\item{completed}{return completed tasks?}
 }
 \value{
 a list of data frames contained in the response from rtm_req
