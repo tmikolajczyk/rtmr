@@ -8,14 +8,23 @@ get_rtm_list_name <- function(id) {
   as.character(setNames(lists_info[["name"]], lists_info[["id"]])[id])
 }
 
-##' Retrieve a list of lists from the RTM API.
+##' Retrieve a list of task lists from the RTM API.
 ##'
 ##' @return a list of lists
 rtm_lists <- function() {
-  rtm_lists <- rtm_req("rtm.lists.getList")
-  if (exists("lists", rtm_lists) &&
-      exists("list", rtm_lists[["lists"]]))
-    rtm_lists[["lists"]][["list"]]
+  lists <- rtm_req("rtm.lists.getList")
+  if (exists("lists", lists) &&
+      exists("list", lists[["lists"]]))
+    lists[["lists"]][["list"]]
   else
     stop("problem retrieving RTM lists")
+}
+
+##' Get a list id from a name.
+##'
+##' @param name a list name
+##' @return a list id as a character string
+get_rtm_list_id <- function(name) {
+  lists <- rtm_lists()
+  lists[["id"]][lists[["name"]] == name]
 }

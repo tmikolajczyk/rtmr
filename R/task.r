@@ -144,3 +144,24 @@ rtm_time <- function(text) {
   else
     stop("problem getting time from RTM")
 }
+
+##' Move a task from one list to another
+##'
+##' @param task the task
+##' @param to_list_name the name of the list to move it to
+##' @return response from the server
+##' @export
+rtm_move_task <- function(task, to_list_name) {
+  to_list_id <- get_rtm_list_id(to_list_name)
+  if (length(to_list_id) == 0L)
+    stop("There's no list called ", to_list_name,
+         " to move the task to")
+  rsp <- rtm_req("rtm.tasks.moveTo", timeline = rtm_timeline(),
+                 from_list_id = task[["list_id"]][1],
+                 to_list_id = to_list_id,
+                 taskseries_id = task[["id"]][1],
+                 task_id = task[["task.id"]][1])
+  if (rsp[["stat"]] == "ok")
+    cat("Method \"moveTo\" completed successfully!\n")
+  invisible(rsp)
+}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lists.r
 \name{rtm_lists}
 \alias{rtm_lists}
-\title{Retrieve a list of lists from the RTM API.}
+\title{Retrieve a list of task lists from the RTM API.}
 \usage{
 rtm_lists()
 }
@@ -10,6 +10,6 @@ rtm_lists()
 a list of lists
 }
 \description{
-Retrieve a list of lists from the RTM API.
+Retrieve a list of task lists from the RTM API.
 }
 
