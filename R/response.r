@@ -2,11 +2,11 @@
 ##'
 ##' @param rsp object returned from \code{httr::GET()}
 check_http_response <- function(rsp) {
-  if (rsp$status_code < 400) return(invisible())
+  if (rsp[["status_code"]] < 400) return(invisible())
   text <- httr::content(rsp, as = "text")
   if (!identical(text, ""))
     text <- jsonlite::fromJSON(text, simplifyVector = FALSE)
-  stop("HTTP error: ", rsp$status_code, "\n", text, call. = FALSE)
+  stop("HTTP error: ", rsp[["status_code"]], "\n", text, call. = FALSE)
 }
 
 ##' Check the JSON sent by the server.
@@ -23,12 +23,13 @@ check_json_response <- function(rsp) {
 ##' @param rsp JSON structured data
 check_rtm_response <- function(rsp) {
   json_inconsistent <- "JSON valid but not consistent with RTM scheme."
-  if (names(rsp) != "rsp" || (!"stat" %in% names(rsp[["rsp"]])))
+  if (!exists("rsp", rsp) || (!exists("stat", rsp[["rsp"]])))
     stop(json_inconsistent)
-  rsp <- rsp$rsp
+  rsp <- rsp[["rsp"]]
   class(rsp) <- "rtm_response"
   if (status(rsp) == "fail")
-    stop(sprintf("RTM error %s: %s", rsp$err$code, rsp$err$msg))
+    stop(sprintf("RTM error %s: %s", rsp[["err"]][["code"]],
+                 rsp[["err"]][["msg"]]))
   else
     return(invisible())
 }
