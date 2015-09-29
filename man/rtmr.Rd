@@ -4,8 +4,8 @@
 \name{rtmr}
 \alias{rtmr}
 \alias{rtmr-package}
-\title{\pkg{rtmr} wraps the Remember the Milk API in R}
+\title{\pkg{rtmr} is an R client for the Remember the Milk API}
 \description{
-\pkg{rtmr} wraps the Remember the Milk API in R
+\pkg{rtmr} is an R client for the Remember the Milk API
 }
 

@@ -62,9 +62,6 @@ rtm_pat <- function(force = FALSE) {
   env <- Sys.getenv('RTM_PAT')
   if (!identical(env, "") && !force) return(env)
 
-  ## if (interactive()) {
-  ## }
-  
   stop("Couldn't find your RTM_PAT environment variable. ",
        "Please set it to your RTM personal authentication token, ",
        "preferably in your .Renviron file in your home folder.\n",

@@ -7,7 +7,7 @@
 quickdf(l)
 }
 \arguments{
-\item{a}{list suitable to be a data frame with quick conversion}
+\item{l}{list suitable to be a data frame with quick conversion}
 }
 \value{
 a data frame

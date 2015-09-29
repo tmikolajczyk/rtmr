@@ -68,11 +68,11 @@ rtm_date <- function(date) {
 
 ##' Convert a list to a data frame
 ##'
-##'this idea and code (quickdf) is attributed to Hadley Wickham
+##' this idea and code (quickdf) is attributed to Hadley Wickham
 ##' http://adv-r.had.co.nz/Profiling.html
 ##' it's much faster than using as.data.frame, and in our use case
 ##' we seem to be guaranteed well-formed lists
-##' @param a list suitable to be a data frame with quick conversion
+##' @param l list suitable to be a data frame with quick conversion
 ##' @return a data frame
 quickdf <- function(l) {
   class(l) <- "data.frame"
