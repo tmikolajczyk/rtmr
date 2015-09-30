@@ -113,7 +113,7 @@ rtm_add_task <- function(name) {
 apply_rtm_method <- function(method, task, msg = NULL, ...) {
   rtm_method <- paste0("rtm.tasks.", method)
   
-  msg_dict <- c(add = "parse", addTags = "tags",
+  msg_dict <- c(addTags = "tags",
                 movePriority = "direction",
                 removeTags = "tags", setDueDate = "due",
                 setEstimate = "estimate", setLocation = "location_id",
