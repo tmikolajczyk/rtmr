@@ -113,24 +113,31 @@ rtm_add_task <- function(name) {
 apply_rtm_method <- function(method, task, msg = NULL, ...) {
   rtm_method <- paste0("rtm.tasks.", method)
   
-  msg_dict <- c(addTags = "tags",
-                movePriority = "direction",
-                removeTags = "tags", setDueDate = "due",
-                setEstimate = "estimate", setLocation = "location_id",
-                setName = "name", setPriority = "priority",
-                setRecurrence = "repeat", setTags = "tags",
-                setURL = "url", notes.add = "note_title")
-  
   base_call <- c(list(rtm_method, timeline = rtm_timeline(),
                       list_id = task[["list_id"]][1],
                       taskseries_id = task[["id"]][1],
                       task_id = task[["task.id"]][1]),
                  list(...))
   if (!is.null(msg))
-    base_call <- c(base_call, setNames(list(msg), msg_dict[method]))
+    base_call <- c(base_call, setNames(list(msg), method_args(method)))
   rsp <- do.call("rtm_req", base_call)
   cat(sprintf("Method \"%s\" completed successfully!\n", method))
   invisible(rsp)
+}
+
+##' Look up the argument that a method takes
+##'
+##' @param method the method as a character string
+##' @return the argument as a character string
+method_args <- function(method) {
+  mtd_dict <- c(addTags = "tags",
+                movePriority = "direction",
+                removeTags = "tags", setDueDate = "due",
+                setEstimate = "estimate", setLocation = "location_id",
+                setName = "name", setPriority = "priority",
+                setRecurrence = "repeat", setTags = "tags",
+                setURL = "url", notes.add = "note_title")
+  mtd_dict[method]
 }
 
 ##' Convert the time from text to UTC via the RTM service.
