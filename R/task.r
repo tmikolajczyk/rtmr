@@ -110,16 +110,24 @@ rtm_add_task <- function(name) {
 ##' @param ... additional arguments
 ##' @return response from the server
 ##' @export
-apply_rtm_method <- function(method, task, msg = NULL, ...) {
+rtm_task_method <- function(method, task, ...) {
   rtm_method <- paste0("rtm.tasks.", method)
+  args <- task_method_args(method)
+  dots <- list(...)
+
+  if (length(args) < 1L)
+    stop("Invalid rtm.tasks method: ", method)
+  if (length(dots) != length(args)) {
+    stop("The number of arguments to apply_rtm_method() ",
+         "do not match parameters to ", method)
+  }
   
   base_call <- c(list(rtm_method, timeline = rtm_timeline(),
                       list_id = task[["list_id"]][1],
                       taskseries_id = task[["id"]][1],
-                      task_id = task[["task.id"]][1]),
-                 list(...))
-  if (!is.null(msg))
-    base_call <- c(base_call, setNames(list(msg), method_args(method)))
+                      task_id = task[["task.id"]][1]))
+  
+  base_call <- c(base_call, setNames(dots, args))
   rsp <- do.call("rtm_req", base_call)
   cat(sprintf("Method \"%s\" completed successfully!\n", method))
   invisible(rsp)
@@ -129,14 +137,14 @@ apply_rtm_method <- function(method, task, msg = NULL, ...) {
 ##'
 ##' @param method the method as a character string
 ##' @return the argument as a character string
-method_args <- function(method) {
-  mtd_dict <- c(addTags = "tags",
-                movePriority = "direction",
-                removeTags = "tags", setDueDate = "due",
-                setEstimate = "estimate", setLocation = "location_id",
-                setName = "name", setPriority = "priority",
-                setRecurrence = "repeat", setTags = "tags",
-                setURL = "url", notes.add = "note_title")
+task_method_args <- function(method) {
+  mtd_dict <- list(addTags = "tags",
+                   movePriority = "direction",
+                   removeTags = "tags", setDueDate = "due",
+                   setEstimate = "estimate", setLocation = "location_id",
+                   setName = "name", setPriority = "priority",
+                   setRecurrence = "repeat", setTags = "tags",
+                   setURL = "url", notes.add = c("note_title", "notes_text"))
   mtd_dict[method]
 }
 
