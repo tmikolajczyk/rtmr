@@ -10,5 +10,5 @@ License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/jowalski/rtmr
 BugReports: https://github.com/jowalski/rtmr/issues
-Imports: httr, jsonlite, digest, plyr
+Imports: httr, jsonlite, digest, plyr, magrittr
 Suggests: testthat
