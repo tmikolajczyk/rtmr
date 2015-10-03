@@ -128,17 +128,24 @@ rtm_task_method <- function(method, task, ...) {
 ##'
 ##' @param method the method as a character string
 ##' @return the argument as a character string
-task_method_args <- function(method) {
-  mtd_dict <- list(addTags = "tags",
-                   movePriority = "direction",
-                   removeTags = "tags", setDueDate = "due",
-                   setEstimate = "estimate", setLocation = "location_id",
-                   setName = "name", setPriority = "priority",
-                   setRecurrence = "repeat", setTags = "tags",
-                   setURL = "url", notes.add = c("note_title", "notes_text"))
-  mtd_dict[method]
+lookup_task_method_args <- function(method) {
+  task_method_args()[[method]]
 }
 
+##' A list of the arguments to RTM task method calls
+##'
+##' @return the list
+##' @export
+task_method_args <- function() {
+  list(addTags = "tags",
+       movePriority = "direction",
+       removeTags = "tags", setDueDate = "due",
+       setEstimate = "estimate", setLocation = "location_id",
+       setName = "name", setPriority = "priority",
+       setRecurrence = "repeat", setTags = "tags",
+       setURL = "url", notes.add = c("note_title", "note_text"))
+}
+  
 ##' Convert the time from text to UTC via the RTM service.
 ##'
 ##' @param text a character string representing text
@@ -149,24 +156,4 @@ rtm_time <- function(text) {
     return(rsp[["time"]][["$t"]])
   else
     stop("problem getting time from RTM")
-}
-
-##' Move a task from one list to another
-##'
-##' @param task the task
-##' @param to_list_name the name of the list to move it to
-##' @return response from the server
-##' @export
-rtm_move_task <- function(task, to_list_name) {
-  to_list_id <- get_rtm_list_id(to_list_name)
-  if (length(to_list_id) == 0L)
-    stop("There's no list called ", to_list_name,
-         " to move the task to")
-  rsp <- rtm_req("rtm.tasks.moveTo", timeline = rtm_timeline(),
-                 from_list_id = task[["list_id"]][1],
-                 to_list_id = to_list_id,
-                 taskseries_id = task[["id"]][1],
-                 task_id = task[["task.id"]][1])
-  cat("Method \"moveTo\" completed successfully!\n")
-  invisible(rsp)
 }
