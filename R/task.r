@@ -89,46 +89,37 @@ rbinddf <- function(x, y) {
   rbind(quickdf(x), quickdf(y))
 }
 
-##' Add a task.
-##'
-##' @param name the name of the task including all Smart Add tags
-##' @return response from the server
-##' @export
-rtm_add_task <- function(name) {
-  ## parse is 1 because we always use Smart Add, for now
-  rsp <- rtm_req("rtm.tasks.add", name = name,
-                 timeline = rtm_timeline(), parse = "1")
-  cat("Added task\n")
-  invisible(rsp)
-}
-
-##' Apply a method to a task.
+##' Call rtm_req with a "rtm.tasks.*" method on the given task.
 ##'
 ##' @param method one of the RTM API "rtm.tasks.*" methods
 ##' @param task a task
-##' @param msg the additional parameter that some methods optionally have
 ##' @param ... additional arguments
 ##' @return response from the server
 ##' @export
 rtm_task_method <- function(method, task, ...) {
   rtm_method <- paste0("rtm.tasks.", method)
-  args <- task_method_args(method)
+  args <- lookup_task_method_args(method)
   dots <- list(...)
 
   if (length(args) < 1L)
     stop("Invalid rtm.tasks method: ", method)
   if (length(dots) != length(args)) {
-    stop("The number of arguments to apply_rtm_method() ",
+    stop("The number of arguments to rtm_task_method() ",
          "do not match parameters to ", method)
   }
+
+  ## note: not implemented yet, if we only get part of the way through
+  ## and lose a connection might want to revert the timeline somehow
+  timeline <- rtm_timeline()
+  for (i in seq_len(nrow(task))) {
+    base_call <- c(list(rtm_method, timeline = timeline,
+                        list_id = task[["list_id"]][i],
+                        taskseries_id = task[["id"]][i],
+                        task_id = task[["task.id"]][i]))
   
-  base_call <- c(list(rtm_method, timeline = rtm_timeline(),
-                      list_id = task[["list_id"]][1],
-                      taskseries_id = task[["id"]][1],
-                      task_id = task[["task.id"]][1]))
-  
-  base_call <- c(base_call, setNames(dots, args))
-  rsp <- do.call("rtm_req", base_call)
+    base_call <- c(base_call, setNames(dots, args))
+    rsp <- do.call("rtm_req", base_call)
+  }
   cat(sprintf("Method \"%s\" completed successfully!\n", method))
   invisible(rsp)
 }
