@@ -3,7 +3,7 @@
 ##' @param name the name of the task including all Smart Add tags
 ##' @return response from the server
 ##' @export
-addTask <- function(name) {
+add_task <- function(name) {
   ## parse is 1 because we always use Smart Add, for now
   rsp <- rtm_req("rtm.tasks.add", name = name,
                  timeline = rtm_timeline(), parse = "1")
@@ -17,7 +17,7 @@ addTask <- function(name) {
 ##' @param to_list_name the name of the list to move it to
 ##' @return response from the server
 ##' @export
-moveTo <- function(task, to_list_name) {
+move_to <- function(task, to_list_name) {
   to_list_id <- get_rtm_list_id(to_list_name)
   if (length(to_list_id) == 0L)
     stop("There's no list called ", to_list_name,
@@ -34,19 +34,15 @@ moveTo <- function(task, to_list_name) {
 
 ##' Calls corresponding RTM task method
 ##'
-##' @param task the task
-##' @param tags tags
-##' @return response from the server
-addTags <- function (task, tags) {
-  rtm_task_method("addTags", task, tags)
-}
+
 
 ##' Calls corresponding RTM task method
 ##'
 ##' @param task the task
 ##' @param direction direction
 ##' @return response from the server
-movePriority <- function (task, direction) {
+##' @export
+move_priority <- function(task, direction) {
   rtm_task_method("movePriority", task, direction)
 }
 
@@ -55,7 +51,8 @@ movePriority <- function (task, direction) {
 ##' @param task the task
 ##' @param tags tags
 ##' @return response from the server
-removeTags <- function (task, tags) {
+##' @export
+remove_tags <- function(task, tags) {
   rtm_task_method("removeTags", task, tags)
 }
 
@@ -64,7 +61,8 @@ removeTags <- function (task, tags) {
 ##' @param task the task
 ##' @param due due date
 ##' @return response from the server
-setDueDate <- function (task, due) {
+##' @export
+set_due_date <- function(task, due) {
   rtm_task_method("setDueDate", task, due)
 }
 
@@ -73,7 +71,8 @@ setDueDate <- function (task, due) {
 ##' @param task the task
 ##' @param estimate time estimate
 ##' @return response from the server
-setEstimate <- function (task, estimate) {
+##' @export
+set_estimate <- function(task, estimate) {
   rtm_task_method("setEstimate", task, estimate)
 }
 
@@ -82,7 +81,8 @@ setEstimate <- function (task, estimate) {
 ##' @param task the task
 ##' @param location_id location id
 ##' @return response from the server
-setLocation <- function (task, location_id) {
+##' @export
+set_location <- function(task, location_id) {
   rtm_task_method("setLocation", task, location_id)
 }
 
@@ -91,7 +91,8 @@ setLocation <- function (task, location_id) {
 ##' @param task the task
 ##' @param name the task name
 ##' @return response from the server
-setName <- function (task, name) {
+##' @export
+set_name <- function(task, name) {
   rtm_task_method("setName", task, name)
 }
 
@@ -100,7 +101,8 @@ setName <- function (task, name) {
 ##' @param task the task
 ##' @param priority priority
 ##' @return response from the server
-setPriority <- function (task, priority) {
+##' @export
+set_priority <- function(task, priority) {
   rtm_task_method("setPriority", task, priority)
 }
 
@@ -109,7 +111,8 @@ setPriority <- function (task, priority) {
 ##' @param task the task
 ##' @param `repeat` recurrence
 ##' @return response from the server
-setRecurrence <- function (task, `repeat`) {
+##' @export
+set_recurrence <- function(task, `repeat`) {
   rtm_task_method("setRecurrence", task, `repeat`)
 }
 
@@ -118,7 +121,8 @@ setRecurrence <- function (task, `repeat`) {
 ##' @param task the task
 ##' @param tags tags
 ##' @return response from the server
-setTags <- function (task, tags) {
+##' @export
+set_tags <- function(task, tags) {
   rtm_task_method("setTags", task, tags)
 }
 
@@ -127,7 +131,8 @@ setTags <- function (task, tags) {
 ##' @param task the task
 ##' @param url url
 ##' @return response from the server
-setURL <- function (task, url) {
+##' @export
+set_url <- function(task, url) {
   rtm_task_method("setURL", task, url)
 }
 
@@ -137,6 +142,7 @@ setURL <- function (task, url) {
 ##' @param note_title note title
 ##' @param note_text note text
 ##' @return response from the server
-notes.add <- function (task, note_title, note_text) {
+##' @export
+notes_add <- function(task, note_title, note_text) {
   rtm_task_method("notes.add", task, note_title, note_text)
 }
