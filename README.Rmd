@@ -16,25 +16,24 @@ knitr::opts_chunk$set(
 
 # rtmr #
 
-To-do list apps can be great on the go, with nifty UIs, APIs and hooks into all kinds of services.
-
-I couldn't find a wrapper for "Remember the Milk" in R, so here's my attempt at that, to allow the level of automation and statistical geekery to which R users are accustomed.
+This is meant to be an R wrapper for the "Remember the Milk" API, with the hope of making things operate in a very R-like fashion.
 
 ## Create Tasks ##
 
-Start with the basics, creating tasks, but with an R twist: vectorize your add_tasks.
+We'll start with the basics, creating tasks, and note how we can use R to do it in an R way.
 
 ```{r}
+
 tasks <- c("watch lectures ^wed =\"2 hours\"",
            "do reading ^thu =\"2 hours\"",
            "do problem set ^fri =\"4 hours\"",
            "review problem set ^sat =\"1 hour\"")
-rtm_add_task(paste(tasks, "*weekly #MyClass"))
+add_ask(paste(tasks, "*weekly #MyClass"))
 ```
 
 ## Choose Tasks ##
 
-Pick them randomly!
+We can pick our tasks randomly! Or perhaps algorithmically.
 
 ```{r}
 quick_tasks <- rtm_search("list:Household timeEstimate\"< 30 minutes\"")
