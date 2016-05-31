@@ -20,34 +20,34 @@
 ##'
 ##' rtm_req("rtm.tasks.getList", filter = "dueWithin:\"5 days\"")
 ##' 
-rtm_req <- function(method, auth = TRUE, ...) {
-  url <- "https://api.rememberthemilk.com/"
-  path <- "services/rest/"
-
-  dots <- list(...)
-  if (length(dots) != length(which(names(dots) != "")))
-    stop("There cannot be unnamed '...' arguments to rtm_req")
+## rtm_req <- function(method, auth = TRUE, ...) {
+##   url <- "https://api.rememberthemilk.com/"
+##   path <- "services/rest/"
   
-  ## construct query
-  query <- c(list(method = method, api_key = api_key(),
-                  format = "json"), dots)
-  if (auth)
-    query <- c(query, list(auth_token = rtm_pat()))
-  query <- c(query, list(api_sig = sign_request(query)))
+##   dots <- list(...)
+##   if (length(dots) != length(which(names(dots) != "")))
+##     stop("There cannot be unnamed '...' arguments to rtm_req")
   
-  response <- httr::GET(url, path = path, query = query)
-  check_http_response(response)
+##   ## construct query
+##   query <- c(list(method = method, api_key = api_key(),
+##                   format = "json"), dots)
+##   if (auth)
+##     query <- c(query, list(auth_token = rtm_pat()))
+##   query <- c(query, list(api_sig = sign_request(query)))
   
-  response_text <- httr::content(response, as = "text")
-  check_json_response(response_text)
+##   response <- httr::GET(url, path = path, query = query)
+##   check_http_response(response)
   
-  response_rtm <- jsonlite::fromJSON(response_text, flatten = TRUE)
-  check_rtm_response(response_rtm)
+##   response_text <- httr::content(response, as = "text")
+##   check_json_response(response_text)
   
-  ret <- response_rtm[["rsp"]]
-  class(ret) <- "rtm_response"
-  ret
-}
+##   response_rtm <- jsonlite::fromJSON(response_text, flatten = TRUE)
+##   check_rtm_response(response_rtm)
+  
+##   ret <- response_rtm[["rsp"]]
+##   class(ret) <- "rtm_response"
+##   ret
+## }
 
 ##' Sign an API request with a shared secret and MD5 hash according
 ##' to the rule at
@@ -57,13 +57,31 @@ rtm_req <- function(method, auth = TRUE, ...) {
 ##' @return a hexadecimal string value
 sign_request <- function(query) {
   q_order <- order(names(query))
-  ## order query parameters alphabetically
-  ## by key name, concatenate key/value pairs
+  # order query parameters alphabetically by key name, concatenate
+  # key/value pairs
   pairs_str <- paste0(names(query)[q_order],
-                  unlist(query)[q_order],
-                  collapse = "")
+                      unlist(query)[q_order],
+                      collapse = "")
   ## prepend the shared secret
   ss_pairs_str <- paste0(shared_secret(), pairs_str)
   ## calculate MD5 hash
   digest::digest(ss_pairs_str, algo = "md5", serialize = FALSE)
+}
+
+##' Make an HTTP GET request of the RTM service.
+##'
+##' @param method the RTM method
+##' @param ... additional parameters
+##' @param simpliflat use jsonlite simplify and flatten options
+##' @return a list or data frame, as parsed by jsonlite::fromJSON
+rtm_req <- function(method, ..., simpliflat = TRUE) {
+
+  url <- "https://api.rememberthemilk.com/services/rest/"
+
+  response <- rGET(url, config = rtm_token(),
+                   query = list(method = method, ..., format = "json"))
+  stop_for_status(response)
+
+  jsonlite::fromJSON(content(response, type = "application/json", as = "text", encoding = "utf8"),
+                     simplifyVector = simpliflat)$rsp
 }

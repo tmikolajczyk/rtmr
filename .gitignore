@@ -2,3 +2,4 @@
 .Rhistory
 .RData
 data-raw/priority1.rds
+.httr-oauth

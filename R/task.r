@@ -10,7 +10,7 @@ filter_task_info <- function(df) {
   if (!is.data.frame(df)) {
     list_elems <- c("notes", "participants", "tags", "task")
     atomic_df <- quickdf(df[setdiff(names(df), list_elems)])
-
+    
     ## add the lists elements as columns one-by-one
     col_or_blank <- function (col) if(length(df[[col]]) > 0) df[[col]] else ""
     atomic_df[["notes"]] <- col_or_blank("notes")
@@ -100,13 +100,16 @@ rtm_task_method <- function(method, task, ...) {
   rtm_method <- paste0("rtm.tasks.", method)
   args <- lookup_task_method_args(method)
   dots <- list(...)
-
-  if (length(args) < 1L)
-    stop("Invalid rtm.tasks method: ", method)
+  
+  ## if (length(args) < 1L)
+  ##   stop("Invalid rtm.tasks method: ", method)
   if (length(dots) != length(args)) {
     stop("The number of arguments to rtm_task_method() ",
          "do not match parameters to ", method)
   }
+
+  if (length(args) > 0L)
+    dots <- setNames(dots, args)
 
   ## note: not implemented yet, if we only get part of the way through
   ## and lose a connection might want to revert the timeline somehow
@@ -116,10 +119,12 @@ rtm_task_method <- function(method, task, ...) {
                         list_id = task[["list_id"]][i],
                         taskseries_id = task[["id"]][i],
                         task_id = task[["task.id"]][i]))
-  
-    base_call <- c(base_call, setNames(dots, args))
+
+    ## stopped here
+    base_call <- c(base_call)
     rsp <- do.call("rtm_req", base_call)
   }
+   
   cat(sprintf("Method \"%s\" completed successfully!\n", method))
   invisible(rsp)
 }
@@ -156,4 +161,38 @@ rtm_time <- function(text) {
     return(rsp[["time"]][["$t"]])
   else
     stop("problem getting time from RTM")
+}
+
+##' Takes an element x of length 1 and a list that can be quickdf'd,
+##' and returns a cbinded df.
+##'
+##' This should be faster than most other possibilities, but of course
+##' it does not check inputs.
+##'
+##' @param x an vector of length 1
+##' @param l a list that can be quickdf'd
+##' @param x_name the name of the x column
+##' @return a data frame
+cbind_quickdf <- function(x, l, x_name) {
+  quickdf(c(setNames(list(rep(x, length(l[[1]]))), x_name), l))
+}
+
+flatten_task_list <- function(taskseries) {
+  purrr::map2_df(taskseries$id, taskseries$task, cbind_quickdf, "series_id")
+}
+
+flatten_note_list <- function(taskseries) {
+  purrr::map2_df(taskseries$id, taskseries$notes, ~ cbind_quickdf(.x, .y$note, "series_id"))
+}
+
+flatten_tag_list <- function(taskseries) {
+  purrr::map2_df(taskseries$id, taskseries$tags, ~ cbind_quickdf(.x, .y$tag, "series_id"))
+}
+
+flatten_participants_list <- function(taskseries) {
+  purrr::map2_df(taskseries$id, taskseries$participants, ~ cbind_quickdf(.x, .y$participant, "series_id"))
+}
+
+flatten_rrule <- function(taskseries) {
+  jsonlite::flatten(taskseries, recursive = FALSE)
 }
