@@ -46,7 +46,7 @@ init_rtmauth <- function(endpoint, app, permission = "read",
 ##'
 ##' @param request_url the url to send to the browser
 ##' @param is_interactive is an interactive environment available
-##' @return 
+##' @return user entry value
 rtmauth_listener <- function(request_url, is_interactive = interactive()) {
   if (!is_interactive) {
     stop("rtmauth_listener() needs an interactive environment.", call. = FALSE)

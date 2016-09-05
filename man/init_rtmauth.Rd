@@ -26,6 +26,6 @@ See:
 https://www.rememberthemilk.com/services/api/authentication.rtm,
 which is similar to the OAuth authentication scheme. This code
 hews closely to httr::init_oauth1.0, to integrate well with that
-package's Token class features.
+package's Token class functionality.
 }
 

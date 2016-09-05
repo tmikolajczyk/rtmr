@@ -7,7 +7,8 @@
 ##' 
 ##' @param url Url of request
 ##' @param app RTM app object
-##' @param frob frob
+##' @param token token string
+##' @param frob frob string
 ##' @param ... additional parameters
 ##' @return list object of length two containing the signature and api_key
 rtmauth_signature <- function(url, app, token = NULL, frob = NULL, ...) {

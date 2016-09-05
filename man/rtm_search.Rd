@@ -19,10 +19,4 @@ a list of data frames contained in the response from rtm_req
 See https://www.rememberthemilk.com/help/?ctx=basics.search.advanced
 for specific parameters.
 }
-\examples{
-
-rtm_search("list:Shopping")
-
-rtm_search("priority:1 list:Work")
-}
 

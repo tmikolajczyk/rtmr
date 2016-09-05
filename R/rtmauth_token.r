@@ -23,7 +23,7 @@ rtmauth_token <- function(endpoint, app, permission = "read",
 #' See httr::Token for more info.
 #' 
 #' @docType class
-#' @importFrom R6 R6Class
+## @importFrom R6 R6Class
 #' @export
 #' @name Token-class
 TokenRTM <- R6::R6Class("TokenRTM", inherit = Token, list(

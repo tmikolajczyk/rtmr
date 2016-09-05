@@ -63,7 +63,7 @@ handle_multiple_tasks <- function(df) {
 ##' @param date date string in RTM server format
 ##' @return a POSIXlt value
 rtm_date <- function(date) {
-  strptime(date, "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+  lubridate::fast_strptime(date, "%Y-%m-%dT%H:%M:%SZ", lt = FALSE)
 }
 
 ##' Convert a list to a data frame
@@ -74,10 +74,10 @@ rtm_date <- function(date) {
 ##' we seem to be guaranteed well-formed lists
 ##' @param l list suitable to be a data frame with quick conversion
 ##' @return a data frame
-quickdf <- function(l) {
-  class(l) <- "data.frame"
-  attr(l, "row.names") <- .set_row_names(length(l[[1]]))
-  l
+quickdf <- function(lst) {
+  class(lst) <- "data.frame"
+  attr(lst, "row.names") <- .set_row_names(if (length(lst) > 0) length(lst[[1]]) else 0)
+  lst
 }
 
 ##' Create a data frame out of two lists or data frames.
@@ -163,36 +163,3 @@ rtm_time <- function(text) {
     stop("problem getting time from RTM")
 }
 
-##' Takes an element x of length 1 and a list that can be quickdf'd,
-##' and returns a cbinded df.
-##'
-##' This should be faster than most other possibilities, but of course
-##' it does not check inputs.
-##'
-##' @param x an vector of length 1
-##' @param l a list that can be quickdf'd
-##' @param x_name the name of the x column
-##' @return a data frame
-cbind_quickdf <- function(x, l, x_name) {
-  quickdf(c(setNames(list(rep(x, length(l[[1]]))), x_name), l))
-}
-
-flatten_task_list <- function(taskseries) {
-  purrr::map2_df(taskseries$id, taskseries$task, cbind_quickdf, "series_id")
-}
-
-flatten_note_list <- function(taskseries) {
-  purrr::map2_df(taskseries$id, taskseries$notes, ~ cbind_quickdf(.x, .y$note, "series_id"))
-}
-
-flatten_tag_list <- function(taskseries) {
-  purrr::map2_df(taskseries$id, taskseries$tags, ~ cbind_quickdf(.x, .y$tag, "series_id"))
-}
-
-flatten_participants_list <- function(taskseries) {
-  purrr::map2_df(taskseries$id, taskseries$participants, ~ cbind_quickdf(.x, .y$participant, "series_id"))
-}
-
-flatten_rrule <- function(taskseries) {
-  jsonlite::flatten(taskseries, recursive = FALSE)
-}

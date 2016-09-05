@@ -8,11 +8,11 @@
 ##' @return a list of data frames contained in the response from rtm_req
 ##'     for an advanced search
 ##' @export
-##' @examples
-##'
-##' rtm_search("list:Shopping")
-##' 
-##' rtm_search("priority:1 list:Work")
+### @examples
+###
+### rtm_search("list:Shopping")
+### 
+### rtm_search("priority:1 list:Work")
 rtm_search <- function(filter, completed = FALSE) {
   filter <- paste(filter, "status:incomplete")
   rsp <- rtm_req("rtm.tasks.getList", filter = filter)

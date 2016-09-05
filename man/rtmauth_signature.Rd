@@ -4,24 +4,21 @@
 \alias{rtmauth_signature}
 \title{Sign parameters for an RTM request.}
 \usage{
-rtmauth_signature(url, method = "GET", app, token = NULL, frob = NULL,
-  ...)
+rtmauth_signature(url, app, token = NULL, frob = NULL, ...)
 }
 \arguments{
 \item{url}{Url of request}
 
-\item{method}{method of request}
-
 \item{app}{RTM app object}
 
-\item{token}{token}
+\item{token}{token string}
 
-\item{frob}{frob}
+\item{frob}{frob string}
 
 \item{...}{additional parameters}
 }
 \value{
-list object of length one named 'api_sig' containing the signature
+list object of length two containing the signature and api_key
 }
 \description{
 See "Signing Requests" at:

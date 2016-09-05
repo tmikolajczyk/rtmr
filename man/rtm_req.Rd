@@ -4,34 +4,19 @@
 \alias{rtm_req}
 \title{Make an HTTP GET request of the RTM service.}
 \usage{
-rtm_req(method, auth = TRUE, ...)
+rtm_req(method, ..., simpliflat = TRUE)
 }
 \arguments{
-\item{method}{name of the RTM method service being requested}
+\item{method}{the RTM method}
 
-\item{auth}{logical value indicating whether to include an
-authentication parameter}
+\item{...}{additional parameters}
 
-\item{...}{additional query parameters, must be named}
+\item{simpliflat}{use jsonlite simplify and flatten options}
 }
 \value{
-the response
+a list or data frame, as parsed by jsonlite::fromJSON
 }
 \description{
-This API does not limit requests but note that the service
-asks: "Please keep requests to an average of 1 request
-per second. We may throttle certain API keys (or block them
-entirely) if they utilize too many resources."
-}
-\details{
-https://www.rememberthemilk.com/services/api/
-}
-\examples{
-
-response <- rtm_req("rtm.test.echo", auth = FALSE, moo = "bar")
-response[["moo"]] # bar
-
-rtm_req("rtm.tasks.getList", filter = "dueWithin:\\"5 days\\"")
-
+Make an HTTP GET request of the RTM service.
 }
 
