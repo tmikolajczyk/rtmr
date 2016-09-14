@@ -1,99 +1,56 @@
-##' Takes an element x of length 1 and a list that can be quickdf'd,
-##' and returns a cbinded df.
-##'
-##' @param x an vector of length 1
-##' @param l a list that can be quickdf'd
-##' @param x_name the name of the x column
-##' @return a data frame
-cbind_quickdf <- function(x, l, var, x_name) {
-  c(purrr::set_names(list(rep(x, length(l[[1]]))),
-              x_name),
-    if (is.character(l)) purrr::set_names(list(l), var) else l) %>%
-    quickdf()
-}
-
-
 flatten_taskseries <- function(tsk_df, svar = "series_id") {
 
-  ## cbind_id <- function (var) cbind(series_id = tsk_df$id, tsk_df[[var]]) %>% as.taskseries_df
-  
-  ## # flatten a nested column list/data.frame
-  ## flatten_var <- function(xvar,
-  ##                         f = ~ cbind_quickdf(.x, .y[[xvar]], xvar, svar),
-  ##                         var = paste0(xvar, "s")) {
-  ##   if (is.data.frame(tsk_df[[var]]))
-  ##     cbind_id(var)
-  ##   else
-  ##     purrr::map2_df(tsk_df$id, tsk_df[[var]], f) %>% as.taskseries_df
-  ## }
+  select_cols <- function(cols) {
+    ## case with a single task id
+    if (!is.data.frame(tsk_df)) {
+      if (length(cols) > 1) {
+        tsk_df <- quickdf(tsk_df[c("id", cols)])
+      } else {
+        tsk_df <- bind_cols(quickdf(tsk_df["id"]),
+                            list(.col = list(quickdf(purrr::flatten(tsk_df[cols]))))) %>%
+          rename_(.dots = setNames(".col", cols))
+      }
+    }
+    rename_(tsk_df, .dots = setNames("id", svar)) %>%
+      select_(.dots = c(svar, cols))
+  }
 
   fix_unnest <- function(df, col, fun) {
     if (is.data.frame(df[[col]])) {
-      cbind(series_id = df$series_id, df[[col]])
+      bind_cols(list(.svar = df[[svar]]), df[[col]]) %>% rename_(.dots = setNames(".svar", svar))
     } else {
       mutate_(df, .dots = (~f(c)) %>%
                     lazyeval::interp(c = as.name(col), f = as.name(fun)) %>%
                     list %>% setNames(col)) %>%
         tidyr::unnest_(col)
     }
-#      mut_unnest(df, col, fun)
   }
 
-  fix_quickdf2 <- function(ncol) purrr::map(ncol, ~ purrr::flatten(.x) %>% quickdf)
   fix_quickdf <- function(ncol) purrr::map(ncol, quickdf)
-  
-  select_cols <- function(cols) {
-    rename_(tsk_df, .dots = setNames("id", svar)) %>%
-      select_(.dots = c(svar, cols))
-  }
-
-  ## mut_unnest <- function(df, col, fun) {
-  ##   mutate_(df, .dots = (~f(c)) %>%
-  ##                 lazyeval::interp(c = as.name(col),
-  ##                                  f = as.name(fun)) %>%
-  ##                 list %>% setNames(col)) %>%
-  ##     unnest_(col)
-  ## }
+  fix_quickdf2 <- function(ncol) purrr::map(ncol, ~ purrr::flatten(.x) %>% quickdf)
   
   fix_ts <- function(s_cols, fun = NULL, t_cols = NULL) {
     
-    `if`(length(setdiff(s_cols, names(tsk_df))) == 0, {
+    if (length(setdiff(s_cols, names(tsk_df))) == 0) {
       select_cols(s_cols) %>%
         { if (is.null(fun)) . else fix_unnest(., s_cols, fun) } %>%
         { if (is.null(t_cols) || (length(intersect(t_cols, names(.))) == 0)) .
-          else dplyr::mutate_at(., t_cols, rtm_date) }
-    }, taskseries_df()) %>%
-      as.taskseries_df()
+          else dplyr::mutate_at(., t_cols, rtm_date) } %>%
+        as.taskseries_df
+    } else {
+      taskseries_df()
+    }
   }
   
   taskseries(
-    series = fix_ts(c("created", "modified", "name", "source", "url", "location_id")),
+    series = fix_ts(c("created", "modified", "name", "source", "url", "location_id"),
+                    t_cols = c("created", "modified")),
     tasks = fix_ts("task", "fix_quickdf", c("due", "added", "completed", "deleted")),
     notes = fix_ts("notes", "fix_quickdf2", c("created", "modified")),
     tags = fix_ts("tags", "fix_quickdf"),
     participants = fix_ts("participants", "fix_quickdf"),
     rrule = fix_ts("rrule", "fix_quickdf")
   )
-  
-}
-
-## taskseries(
-  ##   series = tsk_df[, c("id", "created", "modified", "name", "source", "url", "location_id")] %>%
-  ##     rename(series_id = "id") %>% as.taskseries_df,
-  ##   tasks = flatten_var("task", f = ~ cbind_quickdf(.x, .y, "task", svar), "task"),
-  ##   notes = flatten_var("note"),
-  ##   tags = flatten_var("tag"),
-  ##   participants = flatten_var("participant"),
-  ##   rrule = if ("rrule" %in% names(tsk_df)) cbind_id("rrule") else NULL
-  ## )
-#}
-
-convert_taskseries_time <- function(tsksrs) {
-  convtime <- mutate_each_col_f(rtm_date)
-  tsksrs[["series"]] <- convtime(tsksrs[["series"]], c("created", "modified"))
-  tsksrs[["tasks"]] <- convtime(tsksrs[["tasks"]], c("due", "added", "completed", "deleted"))
-  tsksrs[["notes"]] <- convtime(tsksrs[["notes"]], c("created", "modified"))
-  tsksrs
 }
 
 taskseries <- function(series = NULL, tasks = NULL, notes = NULL,
@@ -140,10 +97,40 @@ taskseries_combine <- function(x, y) {
 }
 
 print.taskseries <- function(x, completed = FALSE, ...) {
-  # filter_tsr_(x, ~!is.na(tasks$completed))
   cat("<taskseries>\n")
-  cat(x$series$name, sep = " - ")
-  cat("\n")
+  print_taskseries_info(x, ~toString(name, print_due_date(due, has_due_time)))
+}
+
+toString.taskseries_info <- function(x, ..., width = 37, min_width = 6) {
+  other_str <- paste(..., sep = "")
+  width_x <- pmax(min_width, width - nchar(as.character(other_str), type = "width"))
+
+  paste(
+    dplyr::if_else(nchar(x, type = "width") > width_x,
+                   paste0(strtrim(x, width_x - 3), "..."),
+                   as.character(x)),
+    ..., sep = "")
+}
+
+print_taskseries_info <- function(x, fmla, width = 80) {
+  if (!exists("series_id", x$tasks)) {
+    print("\n")
+  } else {
+    filter_(x, ~is.na(tasks$completed) & is.na(tasks$deleted))[["tasks"]] %>%
+      # x$tasks %>%
+      #    filter_(~is.na(completed) & is.na(deleted)) %>%
+      group_by_(~series_id, ~has_due_time) %>%
+      summarize_(due = ~max(due)) %>%
+      ungroup() %>%
+      left_join(select_(x$series, ~series_id, ~name), by = "series_id") %>%
+      arrange_(~desc(due)) %>%
+      mutate(name = `class<-`(name, c("taskseries_info", "character"))) %>%
+      lazyeval::f_eval(fmla, .) %>%
+      { withr::with_options(list(width = width), print(., quote = FALSE)) }
+  }
+}
+
+eval_tseries_info <- function(ti_df, f) {
 }
 
 as.taskseries <- function(x) UseMethod("as.taskseries")
@@ -153,9 +140,7 @@ as.taskseries.NULL <- function(x) taskseries()
 
 as.taskseries.rtm_response <- function(x) {
   if (x$stat == "ok") {
-    x$tasks$list$taskseries %>%
-      flatten_taskseries %>%
-      convert_taskseries_time
+    flatten_taskseries(x$tasks$list$taskseries)
   } else {
     stop("status not ok")
   }
@@ -163,30 +148,17 @@ as.taskseries.rtm_response <- function(x) {
 
 is.taskseries <- function(x) inherits(x, "taskseries")
 
-c.taskseries <- function(...) {
-  purrr::reduce(list(...), taskseries_combine)
-}
+c.taskseries <- function(...) purrr::reduce(list(...), taskseries_combine)
 
 keep_ids <- function(tsrs, ids) {
-  purrr::map(tsrs, ~ .x[.x[["series_id"]] %in% ids, ]) %>%
-    as.taskseries
+  as.taskseries(purrr::map(tsrs, ~ .x[.x[["series_id"]] %in% ids, ]))
 }
 
 discard_ids <- function(tsksrs, ids) {
-  purrr::map(tsrs, ~ .x[!.x[["series_id"]] %in% ids, ]) %>%
-    as.taskseries
+  as.taskseries(purrr::map(tsrs, ~ .x[!.x[["series_id"]] %in% ids, ]))
 }
 
-filter_tsr <- function(tsrs, expr) {
-
-  if (!is.taskseries(tsrs)) stop("not a taskseries")
-
-  keep_ids(tsrs, eval_across_plist(expr, tsrs))
-}
-
-is_parenthesized <- function(expr) {
-  is.call(expr) && identical(expr[[1L]], quote(`(`))
-}
+is_parenthesized <- function(expr) is.call(expr) && identical(expr[[1L]], quote(`(`))
 
 is_logical_op2 <- function(op, ops) {
   identical(op, as.name(ops[1])) ||
@@ -202,10 +174,9 @@ is_logical_op3 <- function(op, ops) {
   ## much slower, more generic
   Reduce(any, lapply(ops, function(op_i) op == as.name(op_i)))
 }
-
-
   
 ## ## ## l()
+
 ## periodic_list <- rtm_req("rtm.tasks.getList", list_id = "39866813")
 ## shopping_list <- rtm_req("rtm.tasks.getList", list_id = "39819437")
 ## test_list <- rtm_req("rtm.tasks.getList", list_id = "39823464")
@@ -234,7 +205,6 @@ r_closure <- function() {
     tsdf[[col]]
   }
 }
-
 
 eval_plist <- function(expr, plist, r_fun_name = "$.taskseries_df") {
   
@@ -289,12 +259,31 @@ eval_infix <- function(op, x, y, env) {
   eval(as.call(list(op, x, y)), envir = env)
 }
 
-halt_eval_condition <- function(info = NULL) {
-  structure(
-    class = c("halt_eval_condition", "condition"),
-    list(message = "halt_eval_condition", call = sys.call(-1)),
-    info = info
-  )
-}
 is.halt_eval_condition <- function(x) inherits(x, "condition")
 
+rtm_list <- function(list_name) {
+  rtm_req("rtm.tasks.getList",
+          list_id = rtm_lists()$id[match(list_name, rtm_lists()$name)]) %>%
+    as.taskseries
+}
+
+  
+format_due_date <- function(date) {
+  this_year <- lubridate::year(lubridate::today())
+  if_else(lubridate::year(date) == this_year,
+          format(date, "%b %d"), format(date, "%m/%d/%y"))
+}
+
+print_due_date <- function(date, has_due_time) {
+  if_else(has_due_time == 1, sprintf(" [%s]", format_due_date(date)), "")
+}
+
+current_lists <- function(smt = FALSE) {
+  dplyr::filter(rtm_lists(), (archived == 0) & (smart == 0 | xor(!smt, smart == 1)))$name
+}
+
+store_lists <- function(rls) setNames(purrr::map(rls, rtm_list), rls)
+
+filter_.taskseries <- function(tsrs, expr) keep_ids(tsrs, eval_across_plist(expr, tsrs))
+
+sample_lists <- function(n = 10) store_lists(sample(current_lists(), n))

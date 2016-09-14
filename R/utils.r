@@ -45,4 +45,3 @@ check_unique_list <- function(lst) {
 }
 
 as_lazy <- function(expr, env = baseenv()) lazyeval::as.lazy(expr, env)$expr
-
