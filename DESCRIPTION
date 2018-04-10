@@ -18,7 +18,12 @@ Imports:
     magrittr,
     openssl,
     stringr,
-    purrr
+    purrr,
+    dplyr,
+    lazyeval,
+    lubridate,
+    tidyr,
+    withr
 Suggests:
     testthat
 RoxygenNote: 5.0.1

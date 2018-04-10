@@ -2,7 +2,7 @@
 ##'
 ##' @param method the RTM method
 ##' @param ... additional parameters
-##' @param simpliflat use jsonlite simplify and flatten options
+##' @param simplify use jsonlite simplify and flatten options
 ##' @return a list or data frame, as parsed by jsonlite::fromJSON
 rtm_req <- function(method, ..., simplify = TRUE) {
 
@@ -25,7 +25,7 @@ print.rtm_response <- function(x, completed = FALSE, ...) {
   cat("<rtm_response>\n")
   cat(x$stat, "\n")
   if (x$stat == "ok")
-    str(x$tasks$list, max.level = 2)
+    utils::str(x$tasks$list, max.level = 2)
 }
 
 as.rtm_response <- function(x) UseMethod("as.rtm_response")

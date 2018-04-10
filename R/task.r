@@ -72,9 +72,9 @@ rtm_date <- function(date) {
 ##' http://adv-r.had.co.nz/Profiling.html
 ##' it's much faster than using as.data.frame, and in our use case
 ##' we seem to be guaranteed well-formed lists
-##' @param l list suitable to be a data frame with quick conversion
+##' @param lst list suitable to be a data frame with quick conversion
 ##' @return a data frame
-quickdf <- function(lst) {
+quickdf <- function(lst = list()) {
   class(lst) <- "data.frame"
   attr(lst, "row.names") <- .set_row_names(if (length(lst) > 0) length(lst[[1]]) else 0)
   lst
@@ -109,7 +109,7 @@ rtm_task_method <- function(method, task, ...) {
   }
 
   if (length(args) > 0L)
-    dots <- setNames(dots, args)
+    dots <- stats::setNames(dots, args)
 
   ## note: not implemented yet, if we only get part of the way through
   ## and lose a connection might want to revert the timeline somehow

@@ -4,10 +4,10 @@
 \alias{quickdf}
 \title{Convert a list to a data frame}
 \usage{
-quickdf(l)
+quickdf(lst)
 }
 \arguments{
-\item{l}{list suitable to be a data frame with quick conversion}
+\item{lst}{list suitable to be a data frame with quick conversion}
 }
 \value{
 a data frame

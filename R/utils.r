@@ -45,3 +45,12 @@ check_unique_list <- function(lst) {
 }
 
 as_lazy <- function(expr, env = baseenv()) lazyeval::as.lazy(expr, env)$expr
+
+`%||%` <- function (x, y) if (is.null(x)) y else x
+
+rhs <- function(fmla) {
+  stopifnot(is.formula(fmla), length(fmla) == 2)
+  rhs[[2]]
+}
+
+is_list <- function(x) !is.data.frame(x) && is.list(x)

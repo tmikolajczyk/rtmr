@@ -4,14 +4,14 @@
 \alias{rtm_req}
 \title{Make an HTTP GET request of the RTM service.}
 \usage{
-rtm_req(method, ..., simpliflat = TRUE)
+rtm_req(method, ..., simplify = TRUE)
 }
 \arguments{
 \item{method}{the RTM method}
 
 \item{...}{additional parameters}
 
-\item{simpliflat}{use jsonlite simplify and flatten options}
+\item{simplify}{use jsonlite simplify and flatten options}
 }
 \value{
 a list or data frame, as parsed by jsonlite::fromJSON

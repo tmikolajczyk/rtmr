@@ -5,7 +5,7 @@
 ##' @export
 get_rtm_list_name <- function(id) {
   lists <- rtm_lists()
-  as.character(setNames(lists$name, lists$id)[id])
+  as.character(stats::setNames(lists$name, lists$id)[id])
   ## ids <- purrr::map_chr(lists_info, "id")
   ## listnames <- purrr::map_chr(lists_info, "name")
   ## as.character(setNames(listnames, ids)[id])
