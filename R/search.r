@@ -2,19 +2,25 @@
 ##'
 ##' See https://www.rememberthemilk.com/help/?ctx=basics.search.advanced
 ##' for specific parameters.
-##' 
+##'
 ##' @param filter the search terms passed to RTM advanced search
-##' @param completed return completed tasks?
+##' @param completed returns completed (`TRUE`), incompleted (`FALSE`) or both (`completed = ""`) categories of tasks
 ##' @return a list of data frames contained in the response from rtm_req
 ##'     for an advanced search
 ##' @export
 ##' @examples
 ##'
 ##' rtm_search("list:Shopping")
-##' 
+##'
 ##' rtm_search("priority:1 list:Work")
 rtm_search <- function(filter, completed = FALSE) {
-  filter <- paste(filter, "status:incomplete")
+  status <- "status:incomplete"
+  if (completed == TRUE) {
+    status <- "status:complete"
+  } else if (completed == "") {
+    status <- ""
+  }
+  filter <- paste(filter, status)
   rsp <- rtm_req("rtm.tasks.getList", filter = filter)
   if (exists("tasks", rsp) && !exists("list", rsp[["tasks"]])) {
     cat("No tasks matching your query\n")
